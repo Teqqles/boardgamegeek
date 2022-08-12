@@ -108,7 +108,6 @@ def test_get_xml_subelement_text(xml):
     assert node == "asd"
 
 
-@pytest.mark.serialize
 def test_serialization():
     dummy_plays = Thing({"id": "10", "name": "fubar"})
 
@@ -168,6 +167,7 @@ def test_rate_limiting_for_requests():
         bgg.game(game_id=g)
 
     assert 0 < time.time() - end_time < 2
+
 
 def test_html_unescape_function():
     escaped = "&lt;tag&gt;"

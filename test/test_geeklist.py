@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from unittest import mock
+
 import pytest
 
 from _common import *
@@ -14,16 +16,16 @@ def test_get_geeklist_with_invalid_parameters(legacy_bgg):
             legacy_bgg.geeklist(invalid)
 
 
-def test_get_invalid_id_geeklist(legacy_bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_invalid_id_geeklist(mock_get, legacy_bgg):
     mock_get.side_effect = simulate_legacy_bgg
 
     with pytest.raises(BGGItemNotFoundError):
         legacy_bgg.geeklist(TEST_GEEKLIST_INVALID_ID)
 
 
-def test_get_valid_id_geeklist(legacy_bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_valid_id_geeklist(mock_get, legacy_bgg, null_logger):
     mock_get.side_effect = simulate_legacy_bgg
 
     geeklist = legacy_bgg.geeklist(TEST_GEEKLIST_ID, comments=True)

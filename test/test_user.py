@@ -1,5 +1,7 @@
 import datetime
 import time
+from unittest import mock
+
 import pytest
 
 from boardgamegeek import BGGValueError, BGGItemNotFoundError
@@ -26,16 +28,16 @@ def test_get_user_with_invalid_parameters(bgg):
         bgg.user(TEST_VALID_USER, domain="voodoo")
 
 
-def test_get_invalid_user_info(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_invalid_user_info(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     with pytest.raises(BGGItemNotFoundError):
         bgg.user(TEST_INVALID_USER, progress=progress_cb)
 
 
-def test_get_valid_user_info(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_valid_user_info(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     global progress_called

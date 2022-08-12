@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
-import mock
+from unittest import mock
+
 import requests
 import pytest
 import sys
@@ -12,16 +13,16 @@ from boardgamegeek.objects.games import BoardGameVideo, BoardGameVersion, BoardG
 from boardgamegeek.objects.games import PlayerSuggestion
 
 
-def test_get_unknown_game_info(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_unknown_game_info(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     with pytest.raises(BGGItemNotFoundError):
         game = bgg.game(TEST_INVALID_GAME_NAME)
 
 
-def test_get_game_with_invalid_parameters(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_game_with_invalid_parameters(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     with pytest.raises(BGGError):
@@ -148,8 +149,8 @@ def check_game(game):
     repr(game)
 
 
-def test_get_known_game_info(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_known_game_info(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     # use an older game that's not so likely to change
@@ -163,16 +164,16 @@ def test_get_known_game_info(bgg, mocker, null_logger):
     assert type(game.data()) == dict
 
 
-def test_get_known_game_info_by_id(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_known_game_info_by_id(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     game = bgg.game(None, game_id=TEST_GAME_ID, videos=True, versions=True)
     check_game(game)
 
 
-def test_get_known_game_info_by_id_list(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_known_game_info_by_id_list(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     game_list = bgg.game_list(game_id_list=[TEST_GAME_ID, TEST_GAME_ID_2],
@@ -185,8 +186,8 @@ def test_game_id_with_invalid_params(bgg):
         bgg.get_game_id(TEST_GAME_NAME, choose="voodoo")
 
 
-def test_get_game_id_by_name(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_game_id_by_name(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     game_id = bgg.get_game_id(TEST_GAME_NAME)
@@ -217,8 +218,8 @@ def test_get_game_id_by_name(bgg, mocker):
     assert game_id == best_id
 
 
-def test_get_games_by_name(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_games_by_name(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     games = bgg.games("coup")
@@ -231,9 +232,8 @@ def test_get_games_by_name(bgg, mocker, null_logger):
 
     assert len(games) > 1
 
-
-def test_implementations(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_implementations(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     game = bgg.game(game_id=TEST_GAME_WITH_IMPLEMENTATIONS_ID)
@@ -244,8 +244,8 @@ def test_implementations(bgg, mocker):
     assert "Brass: Birmingham" in game.implementations
 
 
-def test_get_expansion(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_expansion(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     game = bgg.game(game_id=TEST_GAME_EXPANSION_ID)
@@ -259,8 +259,8 @@ def test_get_expansion(bgg, mocker):
     assert 199727 in expanded_game_ids
 
 
-def test_get_accessory(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_accessory(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     game = bgg.game(game_id=TEST_GAME_ACCESSORY_ID)

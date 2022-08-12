@@ -1,12 +1,14 @@
 import time
+from unittest import mock
+
 import pytest
 
 from _common import *
 from boardgamegeek import BGGValueError, BGGRestrictSearchResultsTo
 
 
-def test_search(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_search(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     res = bgg.search("some invalid game name", exact=True)

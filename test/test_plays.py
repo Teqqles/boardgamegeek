@@ -1,5 +1,7 @@
 import datetime
 import time
+from unittest import mock
+
 import pytest
 
 from _common import *
@@ -27,8 +29,8 @@ def test_get_plays_with_invalid_parameters(bgg):
         bgg.plays(name=None, game_id="asd")
 
 
-def test_get_plays_with_unknown_username_and_id(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_plays_with_unknown_username_and_id(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     with pytest.raises(BGGItemNotFoundError):
@@ -47,8 +49,8 @@ def test_get_plays_with_invalid_dates(bgg):
         bgg.plays(name=TEST_VALID_USER, max_date="2014-12-31")
 
 
-def test_get_plays_with_valid_dates(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_plays_with_valid_dates(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     min_date = datetime.date(2014, 1, 1)
@@ -57,8 +59,8 @@ def test_get_plays_with_valid_dates(bgg, mocker):
     assert len(plays) > 0
 
 
-def test_get_plays_of_user(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_plays_of_user(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     global progress_called
@@ -98,8 +100,8 @@ def test_get_plays_of_user(bgg, mocker, null_logger):
     plays._format(null_logger)
 
 
-def test_get_plays_of_game(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_plays_of_game(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     global progress_called

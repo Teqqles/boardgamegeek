@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from unittest import mock
+
 import pytest
 
 from _common import *
@@ -15,16 +17,16 @@ def test_get_collection_with_invalid_parameters(bgg):
             bgg.collection(invalid)
 
 
-def test_get_invalid_users_collection(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_invalid_users_collection(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     with pytest.raises(BGGItemNotFoundError):
         bgg.collection(TEST_INVALID_USER)
 
 
-def test_get_valid_users_collection(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_valid_users_collection(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     collection = bgg.collection(TEST_VALID_USER, versions=True)

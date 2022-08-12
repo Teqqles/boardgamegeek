@@ -1,4 +1,6 @@
 import time
+from unittest import mock
+
 import pytest
 
 from boardgamegeek import BGGItemNotFoundError, BGGValueError
@@ -22,8 +24,8 @@ def test_get_guild_with_invalid_parameters(bgg):
             bgg.guild(invalid)
 
 
-def test_get_valid_guild_info(bgg, mocker, null_logger):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_valid_guild_info(mock_get, bgg, null_logger):
     mock_get.side_effect = simulate_bgg
 
     global progress_called
@@ -66,8 +68,8 @@ def test_get_valid_guild_info(bgg, mocker, null_logger):
     assert guild.members == set()
 
 
-def test_get_invalid_guild_info(bgg, mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_get_invalid_guild_info(mock_get, bgg):
     mock_get.side_effect = simulate_bgg
 
     with pytest.raises(BGGItemNotFoundError):

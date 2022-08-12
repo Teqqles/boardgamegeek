@@ -1,5 +1,6 @@
 import requests
 import requests_cache
+from requests_cache import SQLiteCache, DynamoDbCache, BaseCache
 
 from .exceptions import BGGValueError
 
@@ -20,7 +21,8 @@ class CacheBackendMemory(CacheBackend):
             int(ttl)
         except ValueError:
             raise BGGValueError
-        self.cache = requests_cache.core.CachedSession(backend="memory", expire_after=ttl, allowable_codes=(200,))
+        backend = BaseCache()
+        self.cache = requests_cache.CachedSession(backend=backend, expire_after=ttl, allowable_codes=(200,))
 
 
 class CacheBackendSqlite(CacheBackend):
@@ -30,9 +32,14 @@ class CacheBackendSqlite(CacheBackend):
         except ValueError:
             raise BGGValueError
 
-        self.cache = requests_cache.core.CachedSession(cache_name=path,
-                                                       backend="sqlite",
-                                                       expire_after=ttl,
-                                                       extension="",
-                                                       fast_save=fast_save,
-                                                       allowable_codes=(200,))
+        self.cache = requests_cache.CachedSession(backend='sqlite', fast_save=fast_save, cache_name=path, expire_after=ttl, allowable_codes=(200,))
+
+
+class CacheBackendDynamoDb(CacheBackend):
+    def __init__(self, ttl, **kwargs):
+        try:
+            int(ttl)
+        except ValueError:
+            raise BGGValueError
+
+        self.cache = requests_cache.CachedSession(backend='dynamodb', expire_after=ttl, allowable_codes=(200,), **kwargs)

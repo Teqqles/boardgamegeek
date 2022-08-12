@@ -1,6 +1,8 @@
 import os
 import tempfile
 import time
+from unittest import mock
+
 import pytest
 
 from _common import *
@@ -10,8 +12,8 @@ from boardgamegeek import BGGValueError, CacheBackendNone, CacheBackendSqlite
 #
 # Test caches
 #
-def test_no_caching(mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_no_caching(mock_get):
     mock_get.side_effect = simulate_bgg
 
     # test that we can disable caching
@@ -23,8 +25,8 @@ def test_no_caching(mocker):
     assert user.name == TEST_VALID_USER
 
 
-def test_sqlite_caching(mocker):
-    mock_get = mocker.patch("requests.sessions.Session.get")
+@mock.patch("requests.sessions.Session.get")
+def test_sqlite_caching(mock_get):
     mock_get.side_effect = simulate_bgg
 
     # test that we can use the SQLite cache
@@ -34,6 +36,8 @@ def test_sqlite_caching(mocker):
     # close the file and unlink it, we only need the temporary name
     os.close(fd)
     os.unlink(name)
+    #
+    print(name)
 
     assert not os.path.isfile(name)
 
@@ -50,7 +54,7 @@ def test_sqlite_caching(mocker):
     assert os.path.isfile(name)
 
     # clean up..
-    os.unlink(name)
+    #os.unlink(name)
 
 
 def test_invalid_parameter_values_for_bggclient():
